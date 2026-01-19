@@ -1,8 +1,6 @@
 import { get, post, put, del } from '@/utils/request';
 import type { ApiResponse, User, CreateUserInput, UpdateUserInput } from './types';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000/api';
-
 /**
  * 用户服务 - 统一管理用户相关的 API 调用
  */
@@ -12,7 +10,7 @@ export const userService = {
      */
     async getAll(): Promise<User[]> {
         try {
-            const response = await get<ApiResponse<User[]>>(`${API_BASE_URL}/users`);
+            const response = await get<ApiResponse<User[]>>('/users');
             if (response.success && Array.isArray(response.data)) {
                 return response.data;
             }
@@ -29,7 +27,7 @@ export const userService = {
      */
     async getById(id: number): Promise<User | null> {
         try {
-            const response = await get<ApiResponse<User>>(`${API_BASE_URL}/users/${id}`);
+            const response = await get<ApiResponse<User>>(`/users/${id}`);
             if (response.success && response.data) {
                 return response.data;
             }
@@ -44,7 +42,7 @@ export const userService = {
      */
     async create(input: CreateUserInput): Promise<User | null> {
         try {
-            const response = await post<ApiResponse<User>>(`${API_BASE_URL}/users`, input);
+            const response = await post<ApiResponse<User>>('/users', input);
             if (response.success && response.data) {
                 return response.data;
             }
@@ -60,7 +58,7 @@ export const userService = {
      */
     async update(id: number, input: UpdateUserInput): Promise<User | null> {
         try {
-            const response = await put<ApiResponse<User>>(`${API_BASE_URL}/users/${id}`, input);
+            const response = await put<ApiResponse<User>>(`/users/${id}`, input);
             if (response.success && response.data) {
                 return response.data;
             }
@@ -76,7 +74,7 @@ export const userService = {
      */
     async delete(id: number): Promise<boolean> {
         try {
-            const response = await del<ApiResponse<null>>(`${API_BASE_URL}/users/${id}`);
+            const response = await del<ApiResponse<null>>(`/users/${id}`);
             return response.success;
         } catch (error) {
             console.error('Failed to delete user:', error);

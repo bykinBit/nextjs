@@ -1,9 +1,19 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import Cookies from 'js-cookie';
 
+// 基础路径配置
+const getBaseUrl = () => {
+    if (typeof window === 'undefined') {
+        // 服务端渲染时需要完整路径
+        return process.env.SERVER_API_URL || 'http://localhost:3000/api';
+    }
+    // 客户端使用相对路径
+    return process.env.NEXT_PUBLIC_API_BASE_URL || '/api';
+};
+
 // Create axios instance with default config
 const request: AxiosInstance = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || '/api',
+    baseURL: getBaseUrl(),
     timeout: 10000,
     headers: {
         'Content-Type': 'application/json',
@@ -12,9 +22,23 @@ const request: AxiosInstance = axios.create({
 
 // Request interceptor
 request.interceptors.request.use(
-    (config: InternalAxiosRequestConfig) => {
-        // 从 Cookie 中获取 token (支持 SSR 和客户端)
-        const token = Cookies.get('token');
+    async (config: InternalAxiosRequestConfig) => {
+        let token: string | undefined;
+
+        if (typeof window !== 'undefined') {
+            // 客户端：从 js-cookie 获取
+            token = Cookies.get('token');
+        } else {
+            // 服务端 (SSR)：从 next/headers 获取
+            try {
+                const { cookies } = await import('next/headers');
+                const cookieStore = await cookies();
+                token = cookieStore.get('token')?.value;
+            } catch (error) {
+                // 忽略非请求上下文中的错误
+            }
+        }
+
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }

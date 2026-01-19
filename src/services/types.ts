@@ -53,3 +53,16 @@ export interface AuthResponse {
     token: string;
     expiresAt?: string;
 }
+
+// 个人资料更新输入
+export interface ProfileUpdateInput {
+    name?: string;
+    email?: string;
+}
+
+// 仪表盘统计数据
+export interface DashboardStats {
+    totalUsers: number;
+    activeUsers: number;
+    newUsersToday: number;
+}

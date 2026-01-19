@@ -2,8 +2,6 @@ import { get, post } from '@/utils/request';
 import type { ApiResponse, LoginInput, RegisterInput, AuthResponse, User } from './types';
 import Cookies from 'js-cookie';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000/api';
-
 /**
  * 认证服务 - 统一管理认证相关的 API 调用
  */
@@ -13,7 +11,7 @@ export const authService = {
      */
     async login(input: LoginInput): Promise<AuthResponse | null> {
         try {
-            const response = await post<ApiResponse<AuthResponse>>(`${API_BASE_URL}/auth/login`, input);
+            const response = await post<ApiResponse<AuthResponse>>('/auth/login', input);
             if (response.success && response.data) {
                 const { token, user, expiresAt } = response.data;
 
@@ -40,7 +38,7 @@ export const authService = {
      */
     async validate(): Promise<User | null> {
         try {
-            const response = await get<ApiResponse<{ user: User }>>(`${API_BASE_URL}/auth/validate`);
+            const response = await get<ApiResponse<{ user: User }>>('/auth/validate');
             if (response.success && response.data) {
                 return response.data.user;
             }
@@ -56,7 +54,7 @@ export const authService = {
      */
     async register(input: RegisterInput): Promise<User | null> {
         try {
-            const response = await post<ApiResponse<User>>(`${API_BASE_URL}/auth/register`, input);
+            const response = await post<ApiResponse<User>>('/auth/register', input);
             if (response.success && response.data) {
                 return response.data;
             }
