@@ -3,10 +3,11 @@ import { db } from '@/lib/db';
 
 export async function GET(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
-    const id = parseInt(params.id);
-    const user = db.getUserById(id);
+    const { id } = await params;
+    const userId = parseInt(id);
+    const user = db.getUserById(userId);
 
     if (!user) {
         return NextResponse.json({ success: false, message: '未找到用户' }, { status: 404 });
@@ -21,12 +22,13 @@ export async function GET(
 
 export async function PUT(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const id = parseInt(params.id);
+        const { id } = await params;
+        const userId = parseInt(id);
         const body = await request.json();
-        const updatedUser = db.updateUser(id, body);
+        const updatedUser = db.updateUser(userId, body);
 
         if (!updatedUser) {
             return NextResponse.json({ success: false, message: '用户不存在' }, { status: 404 });
@@ -45,10 +47,11 @@ export async function PUT(
 
 export async function DELETE(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
-    const id = parseInt(params.id);
-    const success = db.deleteUser(id);
+    const { id } = await params;
+    const userId = parseInt(id);
+    const success = db.deleteUser(userId);
 
     if (!success) {
         return NextResponse.json({ success: false, message: '用户不存在' }, { status: 404 });
